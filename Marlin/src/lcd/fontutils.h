@@ -6,12 +6,12 @@
  * @date    2016-08-19
  * @copyright GPL/BSD
  */
-#ifndef _FONT_UTILS_H
-#define _FONT_UTILS_H
+#pragma once
+
+#include "../HAL/shared/Marduino.h"
+#include "../core/macros.h"
 
 #include <stdlib.h>
-#include <Arduino.h>
-#include "../core/macros.h"
 #include <stddef.h> // wchar_t
 #include <stdint.h> // uint32_t
 
@@ -28,10 +28,6 @@ uint8_t read_byte_rom(uint8_t * str);
 #define wchar_t uint32_t
 //typedef uint32_t wchar_t;
 
-#ifndef NUM_ARRAY
-  #define NUM_ARRAY(a) (sizeof(a)/sizeof((a)[0]))
-#endif
-
 typedef uint16_t pixel_len_t;
 #define PIXEL_LEN_NOLIMIT ((pixel_len_t)(-1))
 
@@ -45,5 +41,3 @@ uint8_t* get_utf8_value_cb(uint8_t *pstart, read_byte_cb_t cb_read_byte, wchar_t
 /* Returns lenght of string in CHARACTERS, NOT BYTES */
 uint8_t utf8_strlen(const char *pstart);
 uint8_t utf8_strlen_P(PGM_P pstart);
-
-#endif // _FONT_UTILS_H

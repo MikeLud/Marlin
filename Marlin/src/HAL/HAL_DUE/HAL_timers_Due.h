@@ -1,7 +1,7 @@
 /**
  * Marlin 3D Printer Firmware
  *
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
 /**
  * HAL for Arduino Due and compatible (SAM3X8E)
@@ -25,18 +26,11 @@
  * For ARDUINO_ARCH_SAM
  */
 
-#ifndef _HAL_TIMERS_DUE_H
-#define _HAL_TIMERS_DUE_H
-
-// --------------------------------------------------------------------------
-// Includes
-// --------------------------------------------------------------------------
-
 #include <stdint.h>
 
-// --------------------------------------------------------------------------
+// ------------------------
 // Defines
-// --------------------------------------------------------------------------
+// ------------------------
 
 #define FORCE_INLINE __attribute__((always_inline)) inline
 
@@ -45,7 +39,7 @@ typedef uint32_t hal_timer_t;
 
 #define HAL_TIMER_RATE         ((F_CPU) / 2)    // frequency of timers peripherals
 
-#define STEP_TIMER_NUM 3  // index of timer to use for stepper
+#define STEP_TIMER_NUM 2  // index of timer to use for stepper
 #define TEMP_TIMER_NUM 4  // index of timer to use for temperature
 #define PULSE_TIMER_NUM STEP_TIMER_NUM
 #define TONE_TIMER_NUM 6  // index of timer to use for beeper tones
@@ -67,13 +61,13 @@ typedef uint32_t hal_timer_t;
 #define ENABLE_TEMPERATURE_INTERRUPT()  HAL_timer_enable_interrupt(TEMP_TIMER_NUM)
 #define DISABLE_TEMPERATURE_INTERRUPT() HAL_timer_disable_interrupt(TEMP_TIMER_NUM)
 
-#define HAL_STEP_TIMER_ISR  void TC3_Handler()
-#define HAL_TEMP_TIMER_ISR  void TC4_Handler()
-#define HAL_TONE_TIMER_ISR  void TC6_Handler()
+#define HAL_STEP_TIMER_ISR()  void TC2_Handler()
+#define HAL_TEMP_TIMER_ISR()  void TC4_Handler()
+#define HAL_TONE_TIMER_ISR()  void TC6_Handler()
 
-// --------------------------------------------------------------------------
+// ------------------------
 // Types
-// --------------------------------------------------------------------------
+// ------------------------
 
 typedef struct {
   Tc          *pTimerRegs;
@@ -82,15 +76,15 @@ typedef struct {
   uint8_t     priority;
 } tTimerConfig;
 
-// --------------------------------------------------------------------------
+// ------------------------
 // Public Variables
-// --------------------------------------------------------------------------
+// ------------------------
 
 extern const tTimerConfig TimerConfig[];
 
-// --------------------------------------------------------------------------
+// ------------------------
 // Public functions
-// --------------------------------------------------------------------------
+// ------------------------
 
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency);
 
@@ -120,5 +114,3 @@ FORCE_INLINE static void HAL_timer_isr_prologue(const uint8_t timer_num) {
 }
 
 #define HAL_timer_isr_epilogue(TIMER_NUM)
-
-#endif // _HAL_TIMERS_DUE_H

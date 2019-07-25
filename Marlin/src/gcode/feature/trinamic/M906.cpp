@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,29 @@
 #include "../../../module/stepper_indirection.h"
 
 /**
- * M906: Set motor current in milliamps using axis codes X, Y, Z, E
- * Report driver currents when no axis specified
+ * M906: Set motor current in milliamps.
+ *
+ * Parameters:
+ *   X[current]  - Set mA current for X driver(s)
+ *   Y[current]  - Set mA current for Y driver(s)
+ *   Z[current]  - Set mA current for Z driver(s)
+ *   E[current]  - Set mA current for E driver(s)
+ *
+ *   I[index]    - Axis sub-index (Omit or 0 for X, Y, Z; 1 for X2, Y2, Z2; 2 for Z3.)
+ *   T[index]    - Extruder index (Zero-based. Omit for E0 only.)
+ *
+ * With no parameters report driver currents.
  */
 void GcodeSuite::M906() {
-  #define TMC_SAY_CURRENT(Q) tmc_get_current(stepper##Q)
-  #define TMC_SET_CURRENT(Q) tmc_set_current(stepper##Q, value)
+  #define TMC_SAY_CURRENT(Q) tmc_print_current(stepper##Q)
+  #define TMC_SET_CURRENT(Q) stepper##Q.rms_current(value)
 
   bool report = true;
-  const uint8_t index = parser.byteval('I');
+
+  #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3)
+    const uint8_t index = parser.byteval('I');
+  #endif
+
   LOOP_XYZE(i) if (uint16_t value = parser.intval(axis_codes[i])) {
     report = false;
     switch (i) {
@@ -69,7 +83,8 @@ void GcodeSuite::M906() {
         #endif
         break;
       case E_AXIS: {
-        if (get_target_extruder_from_command()) return;
+        const int8_t target_extruder = get_target_extruder_from_command();
+        if (target_extruder < 0) return;
         switch (target_extruder) {
           #if AXIS_IS_TMC(E0)
             case 0: TMC_SET_CURRENT(E0); break;

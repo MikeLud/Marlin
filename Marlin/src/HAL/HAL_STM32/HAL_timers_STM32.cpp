@@ -1,7 +1,7 @@
 /**
  * Marlin 3D Printer Firmware
  *
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
  * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
  *
@@ -19,58 +19,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifdef ARDUINO_ARCH_STM32
 
-// --------------------------------------------------------------------------
-// Includes
-// --------------------------------------------------------------------------
+#if defined(ARDUINO_ARCH_STM32) && !defined(STM32GENERIC)
 
 #include "HAL.h"
 
 #include "HAL_timers_STM32.h"
 
-// --------------------------------------------------------------------------
-// Externals
-// --------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------
+// ------------------------
 // Local defines
-// --------------------------------------------------------------------------
+// ------------------------
 
 #define NUM_HARDWARE_TIMERS 2
 
 //#define PRESCALER 1
-// --------------------------------------------------------------------------
-// Types
-// --------------------------------------------------------------------------
 
-// --------------------------------------------------------------------------
-// Public Variables
-// --------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------
+// ------------------------
 // Private Variables
-// --------------------------------------------------------------------------
+// ------------------------
 
-stm32f4_timer_t TimerHandle[NUM_HARDWARE_TIMERS];
+stm32_timer_t TimerHandle[NUM_HARDWARE_TIMERS];
 
-// --------------------------------------------------------------------------
-// Function prototypes
-// --------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------
-// Private functions
-// --------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------
+// ------------------------
 // Public functions
-// --------------------------------------------------------------------------
+// ------------------------
 
-bool timers_initialised[NUM_HARDWARE_TIMERS] = {false};
+bool timers_initialized[NUM_HARDWARE_TIMERS] = { false };
 
 void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
 
-  if (!timers_initialised[timer_num]) {
+  if (!timers_initialized[timer_num]) {
     uint32_t step_prescaler = STEPPER_TIMER_PRESCALE - 1,
                        temp_prescaler = TEMP_TIMER_PRESCALE - 1;
     switch (timer_num) {
@@ -79,7 +57,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         TimerHandle[timer_num].timer = STEP_TIMER_DEV;
         TimerHandle[timer_num].irqHandle = Step_Handler;
         TimerHandleInit(&TimerHandle[timer_num], (((HAL_TIMER_RATE) / step_prescaler) / frequency) - 1, step_prescaler);
-        HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, 6, 0);
+        HAL_NVIC_SetPriority(STEP_TIMER_IRQ_NAME, STEP_TIMER_IRQ_PRIO, 0);
         break;
 
       case TEMP_TIMER_NUM:
@@ -87,10 +65,10 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
         TimerHandle[timer_num].timer = TEMP_TIMER_DEV;
         TimerHandle[timer_num].irqHandle = Temp_Handler;
         TimerHandleInit(&TimerHandle[timer_num], (((HAL_TIMER_RATE) / temp_prescaler) / frequency) - 1, temp_prescaler);
-        HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, 2, 0);
+        HAL_NVIC_SetPriority(TEMP_TIMER_IRQ_NAME, TEMP_TIMER_IRQ_PRIO, 0);
         break;
     }
-    timers_initialised[timer_num] = true;
+    timers_initialized[timer_num] = true;
   }
 }
 
@@ -114,4 +92,4 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
   return NVIC->ISER[IRQ_Id >> 5] & _BV32(IRQ_Id & 0x1F);
 }
 
-#endif // ARDUINO_ARCH_STM32
+#endif // ARDUINO_ARCH_STM32 && !STM32GENERIC

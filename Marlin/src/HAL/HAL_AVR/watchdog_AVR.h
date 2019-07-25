@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-#ifndef _WATCHDOG_AVR_H_
-#define _WATCHDOG_AVR_H_
+#pragma once
 
 #include <avr/wdt.h>
 
@@ -31,5 +29,3 @@ void watchdog_init();
 // Reset watchdog. MUST be called at least every 4 seconds after the
 // first watchdog_init or AVR will go into emergency procedures.
 inline void watchdog_reset() { wdt_reset(); }
-
-#endif // _WATCHDOG_AVR_H_

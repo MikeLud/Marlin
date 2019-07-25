@@ -109,8 +109,8 @@ bool MAX3421e::reset() {
 bool MAX3421e::start() {
   // Initialize pins and SPI bus
 
-  SET_OUTPUT(SDSS);
-  SET_INPUT(USB_INTR_PIN);
+  SET_OUTPUT(USB_CS_PIN);
+  SET_INPUT_PULLUP(USB_INTR_PIN);
   ncs();
   spiBegin();
 
@@ -127,7 +127,7 @@ bool MAX3421e::start() {
 
   const uint8_t revision = regRd(rREVISION);
   if (revision == 0x00 || revision == 0xFF) {
-    SERIAL_ECHOLNPAIR("Revision register appears incorrect on MAX3421e initialization, got ", revision);
+    SERIAL_ECHOLNPAIR("Revision register appears incorrect on MAX3421e initialization. Got ", revision);
     return false;
   }
 

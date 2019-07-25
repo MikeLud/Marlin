@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
 /**
  * InterruptVectors_Due.h
- *
- * Copyright (c) 2017 Eduardo José Tagle. All right reserved
  *
  * This module relocates the Interrupt vector table to SRAM, allowing new
  * interrupt handlers to be added at runtime. This is required because the
@@ -35,11 +34,6 @@
  * Copyright (c) 2017 Eduardo José Tagle. All right reserved
  */
 
-#ifndef INTERRUPTVECTORS_DUE_H
-#define INTERRUPTVECTORS_DUE_H
-
-#include "../../inc/MarlinConfig.h"
-
 #ifdef ARDUINO_ARCH_SAM
 
 // ISR handler type
@@ -49,4 +43,3 @@ typedef void (*pfnISR_Handler)(void);
 pfnISR_Handler install_isr(IRQn_Type irq, pfnISR_Handler newHandler);
 
 #endif // ARDUINO_ARCH_SAM
-#endif // INTERRUPTVECTORS_DUE_H
